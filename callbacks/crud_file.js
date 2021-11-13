@@ -32,4 +32,7 @@ function readFile (nameFile){
     });
 };
 
-createFile("Hola.txt", "Archivo nuevo");
+// createFile("Hola.txt", "Archivo nuevo");
+// deleteFile("Hola.txt");
+// editFile("Hola.txt", "Nuevo contenido");
+readFile("Hola.txt");
