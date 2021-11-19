@@ -8,6 +8,12 @@ const server = http.createServer((request, response) => {
     // response.writeHead(200, {});
     // response.write('<h1>Hello World!</h1>');
 
+    const metodo = request.method;
+    console.log(metodo);
+
+    const url = request.url;
+    console.log(url);
+
     response.statusCode = 200;
     response.setHeader('Content-Type', 'text/json');
 
