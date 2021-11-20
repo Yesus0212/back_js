@@ -4,10 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "ejercicio1": "nodemon ejercicio1.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Jesus Solis",
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1"

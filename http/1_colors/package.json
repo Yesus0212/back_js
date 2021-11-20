@@ -4,6 +4,7 @@
   "description": "Generacion de paquete .json",
   "main": "index.js",
   "scripts": {
+    "test": "echo \"Hola Koders\" && exit 1",
     "saludar": "node index.js"
   },
   "author": "Jesus Solis",
