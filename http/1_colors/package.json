@@ -1,0 +1,11 @@
+{
+  "name": "1_colors",
+  "version": "1.0.0",
+  "description": "Generacion de paquete .json",
+  "main": "index.js",
+  "scripts": {
+    "saludar": "node index.js"
+  },
+  "author": "Jesus Solis",
+  "license": "ISC"
+}
