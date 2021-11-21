@@ -1,16 +1,1 @@
-{
-    "koders": [
-        {
-            "nombre": "Odon",
-            "genero": "m"
-        },
-        {
-            "nombre": "Balan",
-            "genero": "m"
-        },
-        {
-            "nombre": "German",
-            "genero": "m"
-        }
-    ]
-}
+{"koders":[{"nombre":"Odon","genero":"m"},{"nombre":"Balan","genero":"m"},{"nombre":"German","genero":"m"},{"nombre":"Yesus","genero":"m"},{"nombre":"Aurora","genero":"f"},{"nombre":"Selene","genero":"f"},{"nombre":"Omar","genero":"m"}]}
