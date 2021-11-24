@@ -9,68 +9,72 @@ const file = 'koders.json';  // constante con el nombre del archivo
 
 // Leemos el archivo koders.json, se convierte a un objeto JSON para despues enviarlo como respuesta
 server.get('/koders', async (req, res) => {
-    let data;
-    let response;
+
+    let koders;
 
     const result = {
         code: "",
         message: "",
     };
 
-    try {
-        data = await fs.readFile(file, 'utf-8');           
+    koders = await getKoders();
+
+    if(koders.length != 0){
         result.code = "00";
         result.message = `Operacion exitosa`
-
-        if(data != null)
-            response = JSON.parse(data);
     }
-    catch(error){
+    else{
         result.code = "01";
         result.message = `No fue posible encontrar el archivo ${file}`
-    }    
+    }
    
-    res.json({...result, ...response});
+    res.json({...result, ...koders});
 });
 
 // Recibimos un objeto JSON, para insertarlo como elemento nuevo dentro del archivo de koders.json
 server.post('/koders', async (req, res) => {
 
-    const newElement = req.body;  // Aquí se recupera del request el objeto JSON que se esta enviando en el body y lo almaceno en la constante newElement
+    const koder = req.body;  // Aquí se recupera del request el objeto JSON que se esta enviando en el body y lo almaceno en la constante newElement
+    let koders;
 
     const result = {
         code: "",
         message: ""
     };
 
-    let initData;
-    try {
-        initData = await fs.readFile(file, 'utf-8');
-    }
-    catch(error){
-        console.error(error);
+    koders = await getKoders();
+
+    if(koders.length == 0){
         result.code = "01";
-        result.message = `No es posible encontrar el archivo ${file}`;
+        result.message = `No fue posible encontrar el archivo ${file}`
+
+        res.send(result);
+        return;
     }
-    
-    const objInfo = JSON.parse(initData); // Parseo la información obtenida del archivo .json
-    objInfo.koders.push(newElement);  // Le agrego el nuevo elemento
-    
-    const koders = JSON.stringify(objInfo);  // Vuelvo a convertir el objeto, para poder almacenarlo en el archivo, ya con el nuevo elemento agregado
-    
-    // Reescribo el archivo, con el nuevo contenido.
-    try {
-        initData = await fs.writeFile(file, koders, 'utf-8');
-        result.code = "00";
-        result.message = "Insercion existosa";    
-    }
-    catch(error){
-        console.error(error);
+
+    if(!isValidKoder(koder)){
         result.code = "02";
+        result.message = `Datos invalidos`
+
+        res.send(result);
+        return;
+    }
+
+    koders.koders.push(koder);  // Le agrego el nuevo elemento
+    
+    const validSave = await saveKoders(koders);
+
+    if(validSave){
+        res.statusCode = 201;
+        result.code = "00";
+        result.message = "Insercion existosa"; 
+    }
+    else{        
+        result.code = "03";
         result.message = "Error al crear el registro nuevo";
     }
 
-    res.send(result);
+    res.send({...result, koder});
 });
 
 
@@ -89,41 +93,59 @@ server.patch('/koders/:id', async (req, res) => {
 
     // Aquí obtengo el id enviado como parametro de ruta, pero no se desde donde recibiria la información a actualizar
     // ******************  PREGUNTARLE A OSCAR ****************************************//
-    const koderId = req.params.id;
+    const koderId = req.params.id;    
+    const koder = req.body;
+    let koders;
 
     const result = {
         code: "",
         message: ""
     };
+    
+    koders = await getKoders();
 
-    let initData;
-    try {
-        initData = await fs.readFile(file, 'utf-8');
-    }
-    catch(error){
-        console.error(error);
+    if(koders.length == 0){
         result.code = "01";
-        result.message = `No es posible encontrar el archivo ${file}`;
-    }
-    
-    const objInfo = JSON.parse(initData); // Parseo la información obtenida del archivo .json
-    objInfo.koders.push(newElement);  // Le agrego el nuevo elemento
-    
-    const koders = JSON.stringify(objInfo);  // Vuelvo a convertir el objeto, para poder almacenarlo en el archivo, ya con el nuevo elemento agregado
-    
-    // Reescribo el archivo, con el nuevo contenido.
-    try {
-        initData = await fs.writeFile(file, koders, 'utf-8');
-        result.code = "00";
-        result.message = "Insercion existosa";    
-    }
-    catch(error){
-        console.error(error);
-        result.code = "02";
-        result.message = "Error al crear el registro nuevo";
+        result.message = `No fue posible encontrar el archivo ${file}`
+
+        res.send(result);
+        return;
     }
 
-    res.send("hola");
+    if(!isValidKoder(koder)){
+        result.code = "02";
+        result.message = `Datos invalidos`
+
+        res.send(result);
+        return;
+    }
+    
+    const koderIndex = koders.koders.findIndex((koder) => koder.nombre === koderId);
+
+    if(koderIndex === -1) {
+        result.code = "03";
+        result.message = "El koder no se encuentra en el archivo"
+
+        res.send(result);
+
+        return;
+    }
+
+    koders.koders[koderIndex].nombre = koder.nombre;
+    koders.koders[koderIndex].genero = koder.genero;
+
+    const validSave = await saveKoders(koders);
+
+    if(validSave){
+        result.code = "00";
+        result.message = "Actualizacion existosa"; 
+    }
+    else{        
+        result.code = "04";
+        result.message = "Error al actualizar el registro nuevo";
+    }
+
+    res.send({...result, ...koders});
 });
 
 
@@ -162,7 +184,7 @@ server.get('/koders/:id', async (req, res) => {
     
             result.koder = filterKoder;
         
-            const koder = JSON.stringify(result);  // Vuelvo a convertir el objeto, para enviarlo como respuesta    
+            const koder = JSON.stringify(result, null, 4);  // Vuelvo a convertir el objeto, para enviarlo como respuesta    
         }        
         else{
             result.code = "03";
@@ -214,7 +236,7 @@ server.delete('/koders/:id', async (req, res) => {
             result.code = "00";
             result.message = "Eliminacion exitosa";
 
-            const koders = JSON.stringify(filterKoder);
+            const koders = JSON.stringify(filterKoder, null, 4);
     
             initData = await fs.writeFile(file, koders, 'utf-8');
         }        
@@ -230,6 +252,41 @@ server.delete('/koders/:id', async (req, res) => {
     
     res.send(result);
 });
+
+
+async function getKoders(){
+
+    let dataParse;
+
+    try {
+        const data = await fs.readFile(file, 'utf-8');
+        if(data != null)
+            dataParse = JSON.parse(data);
+
+        return dataParse; 
+    }
+    catch(error){
+        return [];
+    }    
+}
+
+async function saveKoders(dataKoders){
+      
+      try {
+          // En el Stringify, le agrego el null para que no transforme nada y el número 4 que indica la indentación.
+          const koders = JSON.stringify(dataKoders, null, 4);  // Vuelvo a convertir el objeto, para poder almacenarlo en el archivo, ya con el nuevo elemento agregado      
+          await fs.writeFile(file, koders, 'utf-8');
+          
+          return true;
+      }
+      catch(error){
+          return false;
+      }
+}
+
+function isValidKoder(koder) {
+    return koder.nombre && koder.genero
+}
 
 
 // Aquí se inicia el server o app
