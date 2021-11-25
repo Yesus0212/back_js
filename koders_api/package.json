@@ -1,16 +1,15 @@
 {
-  "name": "1_colors",
+  "name": "koders_api",
   "version": "1.0.0",
-  "description": "Generacion de paquete .json",
+  "description": "CRUD con router",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Hola Koders\" && exit 1",
-    "saludar": "nodemon index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Jesus Solis",
   "license": "ISC",
   "dependencies": {
-    "colors": "^1.4.0"
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
