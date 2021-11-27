@@ -1,0 +1,14 @@
+{
+  "name": "intro_mongoose",
+  "version": "1.0.0",
+  "description": "Practica de conexión con mongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jesus Solis",
+  "license": "ISC",
+  "dependencies": {
+    "mongoose": "^6.0.13"
+  }
+}

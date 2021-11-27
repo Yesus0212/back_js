@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
         message: "",
     };
 
-    mentores = await getmentores();
+    mentores = await getMentores();
 
     if(mentores.length != 0){
         result.code = "00";
@@ -29,7 +29,7 @@ router.get('/', async (req, res) => {
 
 
 router.post('/', async (req, res) => {
-    const koder = req.body;
+    const mentor = req.body;
     let mentores;
 
     const result = {
@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
         return;
     }
 
-    if(!isValidKoder(koder)){
+    if(!isValidMentor(mentor)){
         result.code = "02";
         result.message = `Datos invalidos`
 
@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
         return;
     }
 
-    mentores.mentores.push(koder);
+    mentores.mentores.push(mentor);
     
     const validSave = await saveMentores(mentores);
 
@@ -69,13 +69,13 @@ router.post('/', async (req, res) => {
         result.message = "Error al crear el registro nuevo";
     }
 
-    res.send({...result, koder});
+    res.send({...result, mentor});
 });
 
 
 router.patch('/:id', async (req, res) => {
-    const koderId = req.params.id;    
-    const koder = req.body;
+    const mentorId = req.params.id;    
+    const mentor = req.body;
     let mentores;
 
     const result = {
@@ -83,7 +83,7 @@ router.patch('/:id', async (req, res) => {
         message: ""
     };
     
-    mentores = await getmentores();
+    mentores = await getMentores();
 
     if(mentores.length == 0){
         result.code = "01";
@@ -93,7 +93,7 @@ router.patch('/:id', async (req, res) => {
         return;
     }
 
-    if(!isValidKoder(koder)){
+    if(!isValidMentor(mentor)){
         result.code = "02";
         result.message = `Datos invalidos`
 
@@ -101,21 +101,21 @@ router.patch('/:id', async (req, res) => {
         return;
     }
     
-    const koderIndex = mentores.mentores.findIndex((koder) => koder.nombre === koderId);
+    const mentorIndex = mentores.mentores.findIndex((mentor) => mentor.nombre === mentorId);
 
-    if(koderIndex === -1) {
+    if(mentorIndex === -1) {
         result.code = "03";
-        result.message = "El koder no se encuentra en el archivo"
+        result.message = "El mentor no se encuentra en el archivo"
 
         res.send(result);
 
         return;
     }
 
-    mentores.mentores[koderIndex].nombre = koder.nombre;
-    mentores.mentores[koderIndex].genero = koder.genero;
+    mentores.mentores[mentorIndex].nombre = mentor.nombre;
+    mentores.mentores[mentorIndex].genero = mentor.genero;
 
-    const validSave = await savementores(mentores);
+    const validSave = await saveMentores(mentores);
 
     if(validSave){
         result.code = "00";
@@ -131,14 +131,14 @@ router.patch('/:id', async (req, res) => {
 
 
 router.get('/:id', async (req, res) => {
-    const koderId = req.params.id;
+    const mentorId = req.params.id;
 
-    console.log(koderId);
+    console.log(mentorId);
 
     let result = {
         code: "",
         message: "",
-        koder: ""
+        mentor: ""
     };
 
     let initData;
@@ -153,35 +153,35 @@ router.get('/:id', async (req, res) => {
     
     try {
         const objInfo = JSON.parse(initData); 
-        const filterKoder = objInfo.mentores.filter(koder => {
-            return koder.nombre === koderId;
+        const filterMentor = objInfo.mentores.filter(mentor => {
+            return mentor.nombre === mentorId;
         });
 
-        if(filterKoder.length){
+        if(filterMentor.length){
             result.code = "00";
             result.message = "Busqueda exitosa";
     
-            result.koder = filterKoder;
+            result.mentor = filterMentor;
         
-            const koder = JSON.stringify(result, null, 4); 
+            const mentor = JSON.stringify(result, null, 4); 
         }        
         else{
             result.code = "03";
-            result.message = `El koder ${koderId} no se encuentra en el archivo`;
+            result.message = `El mentor ${mentorId} no se encuentra en el archivo`;
         }
     }
     catch(error){
         result.code = "02";
-        result.message = `Error al buscar al koder ${koderId}`;
+        result.message = `Error al buscar al mentor ${mentorId}`;
     }
     
     res.send(result);
 });
 
 router.delete('/:id', async (req, res) => {
-    const koderId = req.params.id;
+    const mentorId = req.params.id;
 
-    console.log(koderId);
+    console.log(mentorId);
 
     let result = {
         code: "",
@@ -201,40 +201,40 @@ router.delete('/:id', async (req, res) => {
     try {
         const objInfo = JSON.parse(initData); 
 
-        const filterKoder = {
+        const filterMentor = {
             mentores : ""
         };
         
-        filterKoder.mentores = objInfo.mentores.filter(koder => { 
-            return koder.nombre !== koderId; 
+        filterMentor.mentores = objInfo.mentores.filter(mentor => { 
+            return mentor.nombre !== mentorId; 
         });
 
-        if(filterKoder.mentores.length){
+        if(filterMentor.mentores.length){
             result.code = "00";
             result.message = "Eliminacion exitosa";
 
-            const mentores = JSON.stringify(filterKoder, null, 4);
+            const mentores = JSON.stringify(filterMentor, null, 4);
     
             initData = await fs.writeFile(file, mentores, 'utf-8');
         }        
         else{
             result.code = "03";
-            result.message = `El koder ${koderId} no se encuentra en el archivo`;
+            result.message = `El mentor ${mentorId} no se encuentra en el archivo`;
         }
     }
     catch(error){
         result.code = "02";
-        result.message = `Error al eliminar al koder ${koderId}`;
+        result.message = `Error al eliminar al mentor ${mentorId}`;
     }
     
     res.send(result);
 });
 
-function isValidKoder(koder) {
-    return koder.nombre && koder.genero
+function isValidMentor(mentor) {
+    return mentor.nombre && mentor.genero
 }
 
-async function getmentores(){
+async function getMentores(){
 
     let dataParse;
 
@@ -250,10 +250,10 @@ async function getmentores(){
     }    
 }
 
-async function savementores(datamentores){
+async function saveMentores(dataMentores){
       
       try {          
-          const mentores = JSON.stringify(datamentores, null, 4);
+          const mentores = JSON.stringify(dataMentores, null, 4);
           await fs.writeFile(file, mentores, 'utf-8');
           
           return true;
