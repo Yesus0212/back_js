@@ -205,9 +205,7 @@ router.delete('/:id', async (req, res) => {
         });
 
         if(filterMentores.mentores.length){
-
-            const mentores = JSON.stringify(filterMentores, null, 4);
-            const validSave = await saveMentores(mentores);
+            const validSave = await saveMentores(filterMentores);
             
             if(validSave){
                 result.code = "00";

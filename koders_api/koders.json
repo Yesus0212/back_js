@@ -1,10 +1,6 @@
 {
     "koders": [
         {
-            "nombre": "Odon",
-            "genero": "m"
-        },
-        {
             "nombre": "Balan",
             "genero": "m"
         },
@@ -13,11 +9,35 @@
             "genero": "m"
         },
         {
+            "nombre": "Selene",
+            "genero": "w"
+        },
+        {
+            "nombre": "Carlos",
+            "genero": "m"
+        },
+        {
+            "nombre": "Fego",
+            "genero": "m"
+        },
+        {
             "nombre": "Yesus",
             "genero": "m"
         },
         {
-            "nombre": "Carlos",
+            "nombre": "Marco",
+            "genero": "m"
+        },
+        {
+            "nombre": "Jairo",
+            "genero": "m"
+        },
+        {
+            "nombre": "Rafa",
+            "genero": "m"
+        },
+        {
+            "nombre": "Mora",
             "genero": "m"
         }
     ]

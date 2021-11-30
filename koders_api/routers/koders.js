@@ -212,9 +212,7 @@ router.delete('/:id', async (req, res) => {
         });
 
         if(filterKoders.koders.length){
-
-            const koders = JSON.stringify(filterKoders, null, 4);
-            const validSave = await saveMentores(koders);
+            const validSave = await saveKoders(filterKoders);
             
             if(validSave){
                 result.code = "00";
