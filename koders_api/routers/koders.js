@@ -5,6 +5,13 @@ const file = 'koders.json';
 
 const router = express.Router();
 
+
+// Middleware de router
+router.use((req, res, next) => {
+    console.log('Middleware de Router');
+    next();
+});
+
 router.get('/', async (req, res) => {
     let koders;
 
@@ -141,19 +148,18 @@ router.get('/:id', async (req, res) => {
         koder: ""
     };
 
-    let initData;
-    try {
-        initData = await fs.readFile(file, 'utf-8');
-    }
-    catch(error){
-        console.error(error);
+    koders = await getKoders();
+
+    if(koders.length == 0){
         result.code = "01";
-        result.message = `No es posible encontrar el archivo ${file}`;
+        result.message = `No fue posible encontrar el archivo ${file}`
+
+        res.send(result);
+        return;
     }
     
     try {
-        const objInfo = JSON.parse(initData); 
-        const filterKoder = objInfo.koders.filter(koder => {
+        const filterKoder = koders.koders.filter(koder => {
             return koder.nombre === koderId;
         });
 
@@ -162,17 +168,15 @@ router.get('/:id', async (req, res) => {
             result.message = "Busqueda exitosa";
     
             result.koder = filterKoder;
-        
-            const koder = JSON.stringify(result, null, 4); 
         }        
         else{
             result.code = "03";
-            result.message = `El koder ${koderId} no se encuentra en el archivo`;
+            result.message = `El mentor ${koderId} no se encuentra en el archivo`;
         }
     }
     catch(error){
         result.code = "02";
-        result.message = `Error al buscar al koder ${koderId}`;
+        result.message = `Error al buscar al mentor ${koderId}`;
     }
     
     res.send(result);

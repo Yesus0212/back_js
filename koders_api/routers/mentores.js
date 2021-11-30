@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs/promises');
 
-const file = 'koders.json'; 
+const file = 'mentores.json'; 
 
 const router = express.Router();
 
@@ -133,27 +133,26 @@ router.patch('/:id', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const mentorId = req.params.id;
 
-    console.log(mentorId);
-
     let result = {
         code: "",
         message: "",
         mentor: ""
     };
 
-    let initData;
-    try {
-        initData = await fs.readFile(file, 'utf-8');
-    }
-    catch(error){
-        console.error(error);
+    let mentores;
+
+    mentores = await getMentores();
+
+    if(mentores.length == 0){
         result.code = "01";
-        result.message = `No es posible encontrar el archivo ${file}`;
+        result.message = `No fue posible encontrar el archivo ${file}`
+
+        res.send(result);
+        return;
     }
     
     try {
-        const objInfo = JSON.parse(initData); 
-        const filterMentor = objInfo.mentores.filter(mentor => {
+        const filterMentor = mentores.mentores.filter(mentor => {
             return mentor.nombre === mentorId;
         });
 
@@ -162,8 +161,6 @@ router.get('/:id', async (req, res) => {
             result.message = "Busqueda exitosa";
     
             result.mentor = filterMentor;
-        
-            const mentor = JSON.stringify(result, null, 4); 
         }        
         else{
             result.code = "03";
@@ -180,8 +177,6 @@ router.get('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const mentorId = req.params.id;
-
-    console.log(mentorId);
 
     let result = {
         code: "",
