@@ -23,6 +23,25 @@ app.get('/koders', async (req, res) => {
     res.json(koders);
 });
 
+app.get('/koders', async (req, res) => {
+    const koders = await Koder.find({});
+    res.json(koders);
+});
+
+app.post('/koders', async (req, res) => {
+    const koder = req.body;
+    try {
+        await Koder.create(koder);
+    }
+    catch(error){
+        console.log(error);
+    }
+    
+});
+
+
+
+
 
 // Es una promesa (por lo que es asincrono)
 mongoose
