@@ -24,12 +24,15 @@ app.get('/koders', async (req, res) => {
 });
 
 app.get('/koders', async (req, res) => {
-    const koders = await Koder.find({});
+    const gender = req.query("gender");
+    const koders = await Koder.find(`{"gender": ${gender}}`);
     res.json(koders);
 });
 
 app.post('/koders', async (req, res) => {
-    const koder = req.body;
+    const request = req.body;
+    const koder = JSON.parse(request);
+
     try {
         await Koder.create(koder);
     }
