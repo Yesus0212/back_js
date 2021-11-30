@@ -183,43 +183,49 @@ router.delete('/:id', async (req, res) => {
         message: "",
     };
 
-    let initData;
-    try {
-        initData = await fs.readFile(file, 'utf-8');
-    }
-    catch(error){
-        console.error(error);
+    let mentores;
+
+    mentores = await getMentores();
+
+    if(mentores.length == 0){
         result.code = "01";
-        result.message = `No es posible encontrar el archivo ${file}`;
+        result.message = `No fue posible encontrar el archivo ${file}`
+
+        res.send(result);
+        return;
     }
     
     try {
-        const objInfo = JSON.parse(initData); 
-
-        const filterMentor = {
+        const filterMentores = {
             mentores : ""
         };
         
-        filterMentor.mentores = objInfo.mentores.filter(mentor => { 
-            return mentor.nombre !== mentorId; 
+        filterMentores.mentores = mentores.mentores.filter(mentores => { 
+            return mentores.nombre !== koderId; 
         });
 
-        if(filterMentor.mentores.length){
-            result.code = "00";
-            result.message = "Eliminacion exitosa";
+        if(filterMentores.mentores.length){
 
-            const mentores = JSON.stringify(filterMentor, null, 4);
-    
-            initData = await fs.writeFile(file, mentores, 'utf-8');
-        }        
+            const mentores = JSON.stringify(filterMentores, null, 4);
+            const validSave = await saveMentores(mentores);
+            
+            if(validSave){
+                result.code = "00";
+                result.message = "Eliminacion existosa"; 
+            }
+            else{        
+                result.code = "04";
+                result.message = `Error al eliminar al koder ${mentorId}`;
+            }
+        }
         else{
             result.code = "03";
-            result.message = `El mentor ${mentorId} no se encuentra en el archivo`;
+            result.message = `El koder ${mentorId} no se encuentra en el archivo`;
         }
     }
     catch(error){
         result.code = "02";
-        result.message = `Error al eliminar al mentor ${mentorId}`;
+        result.message = `Error al eliminar al koder ${mentorId}`;
     }
     
     res.send(result);

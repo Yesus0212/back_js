@@ -1,4 +1,4 @@
-function loadKoders() {
+async function loadKoders() {
     const url = 'http://localhost:8080/koders';
 
     const response = await fetch(url)

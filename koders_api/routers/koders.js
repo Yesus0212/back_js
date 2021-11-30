@@ -185,42 +185,46 @@ router.get('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     const koderId = req.params.id;
 
-    console.log(koderId);
-
     let result = {
         code: "",
         message: "",
     };
 
-    let initData;
-    try {
-        initData = await fs.readFile(file, 'utf-8');
-    }
-    catch(error){
-        console.error(error);
+    let koders;
+
+    koders = await getKoders();
+
+    if(koders.length == 0){
         result.code = "01";
-        result.message = `No es posible encontrar el archivo ${file}`;
+        result.message = `No fue posible encontrar el archivo ${file}`
+
+        res.send(result);
+        return;
     }
     
     try {
-        const objInfo = JSON.parse(initData); 
-
-        const filterKoder = {
+        const filterKoders = {
             koders : ""
         };
         
-        filterKoder.koders = objInfo.koders.filter(koder => { 
-            return koder.nombre !== koderId; 
+        filterKoders.koders = koders.koders.filter(koders => { 
+            return koders.nombre !== koderId; 
         });
 
-        if(filterKoder.koders.length){
-            result.code = "00";
-            result.message = "Eliminacion exitosa";
+        if(filterKoders.koders.length){
 
-            const koders = JSON.stringify(filterKoder, null, 4);
-    
-            initData = await fs.writeFile(file, koders, 'utf-8');
-        }        
+            const koders = JSON.stringify(filterKoders, null, 4);
+            const validSave = await saveMentores(koders);
+            
+            if(validSave){
+                result.code = "00";
+                result.message = "Eliminacion existosa"; 
+            }
+            else{        
+                result.code = "04";
+                result.message = `Error al eliminar al koder ${koderId}`;
+            }
+        }
         else{
             result.code = "03";
             result.message = `El koder ${koderId} no se encuentra en el archivo`;
