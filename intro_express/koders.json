@@ -23,6 +23,10 @@
         {
             "nombre": "Aurora",
             "genero": "f"
+        },
+        {
+            "nombre": "Pedro",
+            "genero": "m"
         }
     ]
 }
